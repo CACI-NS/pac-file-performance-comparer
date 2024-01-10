@@ -1,0 +1,5 @@
+url,old_pac_action,old_pac_status,old_pac_timer_milliseconds,new_pac_action,new_pac_status,new_pac_timer_milliseconds
+bbc.co.uk,PROXY 2.2.2.2:8080,pass,1,PROXY 2.2.2.2:8080,pass,1
+madeupapphere.internal-domain.company.com,DIRECT,pass,1,DIRECT,pass,0
+oldappnotyetremoved.something-else-old.oldcompanyname.com,DIRECT,pass,0,DIRECT,pass,0
+website3.com,PROXY 2.2.2.2:8080,fail,0,DIRECT,pass,0

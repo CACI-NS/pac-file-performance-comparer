@@ -1,0 +1,5 @@
+url,expected_action
+bbc.co.uk,proxy
+madeupapphere.internal-domain.company.com,direct
+oldappnotyetremoved.something-else-old.oldcompanyname.com,direct
+website3.com,direct
