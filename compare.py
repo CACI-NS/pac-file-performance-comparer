@@ -1,69 +1,86 @@
 # Author: AAnkers
 # Date: 10-Jan-2024
 # Description: Compare two PAC files for performance and URL behaviour conformance
+import logging
 import pacparser
 import time
-import datetime
-import csv
+
+from utils import get_formated_time, write_csv, read_csv, PACTest
 
 # Define Constants
-INPUT_CSV = "tests.csv" # Filename of the input CSV file (informs the PAC Tester what expected behaviour, proxy or direct, is per URL; header format: url,expected_action)
-OUTPUT_CSV = "output.csv" # Filename of the output CSV file
-OLD_PAC = "prod.pac" # Filename of the first input PAC file (old pre-optimised version)
-NEW_PAC = "prod_new.pac" # Filename of the second intput PAC file (new optimised version)
+INPUT_CSV: str = "test.csv"  # Filename of the input CSV file (informs the PAC Tester what expected behaviour, proxy or direct, is per URL; header format: url,expected_action)
+OUTPUT_CSV: str = "output_test.csv"  # Filename of the output CSV file
+OLD_PAC: str = "prod.pac"  # Filename of the first input PAC file (old pre-optimised version)
+NEW_PAC: str = "prod_new.pac"  # Filename of the second intput PAC file (new optimised version)
 
-# Functions
-# Perform the comparison and performance timing of each entry via the PAC file
-def pac_test(url, pac_file):
-    # Start time
+
+def pac_test(url: str, pac_file: str) -> PACTest:
     start_time = time.time()
-    # PAC Parser
+
     pacparser.init()
     pacparser.parse_pac(pac_file)
     pacparser.setmyip("10.0.0.1")
     result = pacparser.find_proxy("https://" + url, url)
-    # End time
+
     end_time = time.time()
-    # Calculate the elapsed time
     elapsed_time = int((end_time - start_time) * 1000)
-    # Kill PAC Parser
+
     pacparser.cleanup()
 
-    # Return result and time taken
-    return result, elapsed_time
+    return PACTest(
+        result=result,
+        elapsed_time=elapsed_time
+    )
 
 
-# Main program
-print("JOB START: " + datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z") + "\n")
+def main() -> None:
+    logging.info(f'JOB START: {get_formated_time()}\n')
 
-# Open Tests CSV file, begin processing
-print("Processing and comparing PAC file [" + OLD_PAC + "] against PAC file [" + NEW_PAC + "]...")
-output = "url,old_pac_action,old_pac_status,old_pac_timer_milliseconds,new_pac_action,new_pac_status,new_pac_timer_milliseconds\n"
-try:
-    with open(INPUT_CSV, "r") as csvfile:
-        csvreader = csv.DictReader(csvfile)
-        for row in csvreader:
+    # Open Tests CSV file, begin processing
+    logging.info(f'Processing and comparing PAC file ["{OLD_PAC}"] against PAC file ["{NEW_PAC}"]...')
+
+    field_names: list[str] = [
+        "url",
+        "old_pac_action",
+        "old_pac_status",
+        "old_pac_timer_milliseconds",
+        "new_pac_action",
+        "new_pac_status",
+        "new_pac_timer_milliseconds"
+    ]
+
+    output: str = ''
+
+    try:
+        csv_reader: list[dict] = read_csv(filename=INPUT_CSV)
+
+        for row in csv_reader:
             # Test against old PAC
-            result_old = pac_test(row["url"], OLD_PAC)
-            status_old = "pass" if row["expected_action"].lower() in result_old[0].lower() else "fail"
-            # Test against new PAC
-            result_new = pac_test(row["url"], NEW_PAC)
-            status_new = "pass" if row["expected_action"].lower() in result_new[0].lower() else "fail"
-            print(" Entry: " + row["url"] + ' should go via: ' + row["expected_action"] + ", old PAC goes via: " + result_old[0] + ", new PAC goes via: " + result_new[0] + " [Old PAC Processing: " + str(result_old[1]) + " ms, New PAC Processing: " + str(result_new[1]) + " ms]")
-            
-            # Add to output string
-            output += "{},{},{},{},{},{},{}\n".format(row["url"],result_old[0],status_old,result_old[1],result_new[0],status_new,result_new[1])
-except Exception as e:
-    print(" Error [" + str(e) + "]")
+            test_old: PACTest = pac_test(row.get("url"), OLD_PAC)
+            status_old: str = "pass" if row.get("expected_action").lower() in test_old.result.lower() else "fail"
 
-# Write CSV to output file
-print("\nWriting output CSV to file [" + OUTPUT_CSV + "]...")
-try:
-    f = open(OUTPUT_CSV, "w")
-    f.write(output)
-    f.close()
-    print(" Success")
-    print("\nJOB END: " + datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z"))
-except Exception as e:
-    print(" Error [" + str(e) + "]")
-    print("\nJOB END: " + datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z"))
+            # Test against new PAC
+            test_new: PACTest = pac_test(row.get("url"), NEW_PAC)
+            status_new: str = "pass" if row.get("expected_action").lower() in test_new.result.lower() else "fail"
+
+            logging.info(f'Entry: {row.get("url")} should go via: {row.get("expected_action")}, '
+                         f'old PAC goes via: {test_old.result}, new PAC goes via: {test_new.result} '
+                         f'[Old PAC Processing: {str(test_old.elapsed_time)}ms, '
+                         f'New PAC Processing: {str(test_new.elapsed_time)}ms]')
+
+            # Add to output string
+            output += f'{row.get("url")},{test_old.result},{status_old},{test_old.elapsed_time},{test_new.result},{status_new},{test_new.elapsed_time}'
+
+        logging.info(f"Writing output CSV to file: {OUTPUT_CSV}...")
+        write_csv(filename=OUTPUT_CSV, field_names=field_names, data=output)
+        logging.info("Write File Success")
+
+    except Exception as e:
+        logging.error(f"Error: {str(e)}")
+
+    finally:
+        logging.info(f"JOB END: {get_formated_time()}")
+
+
+if __name__ == '__main__':
+    main()
