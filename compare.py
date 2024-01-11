@@ -9,7 +9,7 @@ from utils import get_formated_time, write_csv, read_csv, PACTest
 
 # Define Constants
 INPUT_CSV: str = "test.csv"  # Filename of the input CSV file (informs the PAC Tester what expected behaviour, proxy or direct, is per URL; header format: url,expected_action)
-OUTPUT_CSV: str = "output_test.csv"  # Filename of the output CSV file
+OUTPUT_CSV: str = "output.csv"  # Filename of the output CSV file
 OLD_PAC: str = "prod.pac"  # Filename of the first input PAC file (old pre-optimised version)
 NEW_PAC: str = "prod_new.pac"  # Filename of the second intput PAC file (new optimised version)
 
