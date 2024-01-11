@@ -15,7 +15,7 @@ def read_csv(filename: str, ) -> list[dict]:
         return list(reader)
 
 
-def get_formated_time() -> str:
+def get_formatted_time() -> str:
     return datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z")
 
 

@@ -5,7 +5,7 @@ import logging
 import pacparser
 import time
 
-from utils import get_formated_time, write_csv, read_csv, PACTest
+from utils import get_formatted_time, write_csv, read_csv, PACTest
 
 # Define Constants
 INPUT_CSV: str = "test.csv"  # Filename of the input CSV file (informs the PAC Tester what expected behaviour, proxy or direct, is per URL; header format: url,expected_action)
@@ -34,7 +34,7 @@ def pac_test(url: str, pac_file: str) -> PACTest:
 
 
 def main() -> None:
-    logging.info(f'JOB START: {get_formated_time()}\n')
+    logging.info(f'JOB START: {get_formatted_time()}\n')
 
     # Open Tests CSV file, begin processing
     logging.info(f'Processing and comparing PAC file ["{OLD_PAC}"] against PAC file ["{NEW_PAC}"]...')
@@ -78,7 +78,7 @@ def main() -> None:
         logging.error(f"Error: {str(e)}")
 
     finally:
-        logging.info(f"JOB END: {get_formated_time()}")
+        logging.info(f"JOB END: {get_formatted_time()}")
 
 
 if __name__ == '__main__':
