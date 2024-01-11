@@ -68,8 +68,7 @@ def main() -> None:
                          f'[Old PAC Processing: {str(test_old.elapsed_time)}ms, '
                          f'New PAC Processing: {str(test_new.elapsed_time)}ms]')
 
-            # Add to output string
-            output += f'{row.get("url")},{test_old.result},{status_old},{test_old.elapsed_time},{test_new.result},{status_new},{test_new.elapsed_time}'
+            output += f'{row.get("url")},{test_old.result},{status_old},{test_old.elapsed_time},{test_new.result},{status_new},{test_new.elapsed_time}\n'
 
         logging.info(f"Writing output CSV to file: {OUTPUT_CSV}...")
         write_csv(filename=OUTPUT_CSV, field_names=field_names, data=output)
