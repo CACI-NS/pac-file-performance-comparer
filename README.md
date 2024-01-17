@@ -1,6 +1,8 @@
 # PAC File Performance Comparer
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/ansicolortags.svg)](https://pypi.python.org/pypi/ansicolortags/) [![GitHub license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/CACI-NS/pac-file-performance-comparer/blob/main/LICENSE)
 
+> Need help getting from NetDevOops to NetDevOps? Learn about how [Network Automation and NetDevOps at CACI](https://info.caci.co.uk/network-automation-devops-caci) can help you on your journey
+
 ## About
 PAC File Performance Comparer is intended be run on an ad-hoc basis to allow a quick comparison using the [Pacparser](https://pacparser.manugarg.com) to calculate both the time difference (i.e. performance optimisation gain of the JavaScript PAC code refactor) and conformity against a test set of URL behaviours (i.e. proxy or direct) for a "before" and "after" PAC (Proxy Auto-Configuration File) refactoring exercise.
 
